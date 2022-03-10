@@ -24,4 +24,3 @@ cd IDEA/idea-IC-213.6777.52/bin/
 ./idea.sh
 ```
 
- ![img](https://cdn.learnku.com/uploads/avatars/1_1530614766.png!/both/100x100) 
