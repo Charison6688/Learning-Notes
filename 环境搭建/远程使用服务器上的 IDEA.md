@@ -25,3 +25,4 @@ cd IDEA/idea-IC-213.6777.52/bin/
 ./idea.sh
 ```
 
+<img src="Linux 搭建 Elasticsearch.assets/1646980507853.png" alt="1646980507853" style="zoom: 60%;" />
