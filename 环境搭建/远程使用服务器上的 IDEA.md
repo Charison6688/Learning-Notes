@@ -13,7 +13,8 @@
 ```bash
 ssh icx31
 
-export DISPLAY=<跳板机IP>:端口号
+# export DISPLAY=<跳板机IP>:端口号
+export DISPLAY=crt-e302.sh.intel.com:8
 ```
 
 1. 在远程服务器的终端中运行 IDEA 的图形化启动脚本，即可在跳板机上使用远程服务器上的 IDEA。
