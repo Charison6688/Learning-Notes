@@ -12,7 +12,6 @@
 
 ```bash
 ssh icx31
-
 # export DISPLAY=<跳板机IP>:端口号
 export DISPLAY=crt-e302.sh.intel.com:8
 ```
