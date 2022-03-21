@@ -52,5 +52,118 @@ cd /home/changyansong/Python/Python-3.8.10/python3/bin/
 
 
 
+## 安装 esrally
+
+```sh
+cd /home/changyansong/Python/Python-3.8.10/python3/bin/
+
+./pip3 install esrally
+```
+
+安装好后可以测试一下是否安装成功：
+
+```sh
+esrally --version
+```
+
+
+
+## 数据准备
+
+track 是赛道的意思，在这里是指压测用的数据和测试策略，track.json 便是压测策略的定义文件。
+
+压测的工作，无非就是以下几个步骤：
+
+- 指定/创建目标 ES 集群
+
+- 创建索引、mapping
+- 导入样本数据
+- 进行读写操作
+- 汇报压测结果
+
+由于 Rally 运行时，需要从外网下载数据，所以改为手动下载。 
+
+
+
+### 下载压测场景的配置（track）
+
+```sh
+# rally 下载后会在用户根目录生成 .rally 文件夹
+mkdir -p ~/.rally/benchmarks
+
+cd ~/.rally/benchmarks
+
+git clone https://github.com/elastic/rally-tracks.git
+```
+
+查看 rally-tracks 项目提供的现成压测场景： 
+
+```sh
+esrally list tracks
+```
+
+跑 list 命令时，rally 自动做了一个 copy 动作 :
+
+```sh
+cd ~/.rally/benchmarks
+
+mkdir tracks
+# 将 rally-tracks 复制到一个新的目录 tracks/default 中
+cp -r rally-tracks tracks/default
+```
+
+所以 rally-tracks 目录可以删掉了 ：
+
+```sh
+rm -rf rally-tracks
+```
+
+
+
+### 下载样本数据（data）
+
+从 list 命令可以知道，不同的压测场景，样本数据的体积不一样。可以根据需求，下载需要的数据。这里以 geopoint 为例。 
+
+```sh
+cd /home/changyansong/.rally/benchmarks/tracks/default/
+# download.sh 是 esrally 提供的自动下载数据集的脚本
+./download.sh geopoint
+# 下载后会在当前目录下生成 rally-track-data-geopoint.tar，解压到用户根目录
+# 解压后，会自动在 ~/.rally/benchmarks/ 下新建 data/geopoint 目录，样本数据就保存在其中
+tar -xvf rally-track-data-geonames.tar -C ~/
+```
+
+
+
+## 测试 esrally
+
+启动 ES 后，在 geopoint 场景下测试 esrally：
+
+```bash
+esrally race --pipeline=benchmark-only --target-hosts=127.0.0.1:9200 --offline --track=geopoint  --challenge=append-no-conflicts
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

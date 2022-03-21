@@ -4,7 +4,7 @@
 
 ## Linux 单节点部署
 
-### 下载
+1. 下载
 
 官网下载地址：[https://www.elastic.co/cn/downloads/elasticsearch](https://www.elastic.co/cn/downloads/elasticsearch)
 
@@ -20,7 +20,7 @@ wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.3.2-li
 
 
 
-### 解压
+2. 解压
 
 ```sh
 # ES的下载位置
@@ -30,7 +30,7 @@ tar -zxvf elasticsearch-7.3.2-linux-x86_64.tar.gz
 
 
 
-### 创建用户
+3. 创建用户
 
 因为安全问题， ES 不允许 root 用户直接运行，所以要创建新用户。
 
@@ -38,7 +38,7 @@ tar -zxvf elasticsearch-7.3.2-linux-x86_64.tar.gz
 
 
 
-### 修改配置文件
+4. 修改配置文件
 
 修改配置文件：`/home/changyansong/Elasticsearch/elasticsearch-7.3.2/config/elasticsearch.yml`
 
@@ -51,9 +51,32 @@ http.port: 9200
 cluster.initial_master_nodes: ["node-1"]
 ```
 
+修改配置文件：` /etc/security/limits.conf `
+
+```sh
+# 在文件末尾中增加下面内容
+# 每个进程可以打开的文件数的限制
+es soft nofile 65536
+es hard nofile 65536
+```
+
+修改配置文件：`/etc/sysctl.conf `
+
+```sh
+# 在文件中增加下面内容
+# 一个进程可以拥有的 VMA(虚拟内存区域)的数量,默认值为 65536
+vm.max_map_count=655360
+```
+
+重新加载：
+
+```sh
+sysctl -p
+```
 
 
-### 启动
+
+5. 启动
 
 ```sh
 cd /home/changyansong/Elasticsearch/elasticsearch-7.3.2/bin/
@@ -67,7 +90,7 @@ cd /home/changyansong/Elasticsearch/elasticsearch-7.3.2/bin/
 
 
 
-### 测试
+6. 测试
 
 测试是否成功启动，输入命令：`curl http://localhost:9200`。
 
