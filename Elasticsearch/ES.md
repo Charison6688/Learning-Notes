@@ -34,7 +34,12 @@ tar -zxvf elasticsearch-7.3.2-linux-x86_64.tar.gz
 
 因为安全问题， ES 不允许 root 用户直接运行，所以要创建新用户。
 
-由于我用的是自己的用户，所以这一步可以跳过。
+```sh
+# 创建用户后，会在 /home 下生成 /changyansong 目录
+useradd changyansong
+```
+
+
 
 
 

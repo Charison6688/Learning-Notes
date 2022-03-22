@@ -6,58 +6,138 @@
 
 注：pyenv 是一个 python 版本管理工具，可以在同一个系统中切换不同的 python 版本。但由于安装过程中出现问题，且未能解决，**所以选择自己手动下载 python 安装包，并且手动执行 python 和 pip 命令**。
 
-1. 进入 python 下载官网，选择合适的压缩包：https://www.python.org/ftp/python/
-2. 解压后，进入到解压后的主目录下，执行以下命令，进行编译，生成 python3 目录。
+
+
+1. 更新 yum 源，安装所需的依赖：
+
+```sh
+yum update
+
+yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel libffi-devel gettext-devel libcurl-devel gcc make
+```
+
+
+
+2. 进入 python 下载官网，选择合适的压缩包：https://www.python.org/ftp/python/，或者直接用 wget
+
+```sh
+wget https://www.python.org/ftp/python/3.8.10/Python-3.8.10.tar.xz
+```
+
+
+
+3. 解压后，进入到解压后的 python 主目录下，进行编译，从而在 /usr/local 目录下生成 python3 目录。
 
 ```sh
 cd /home/changyansong/Python/Python-3.8.10/
 
-./configure --prefix=/home/changyansong/Python/Python-3.8.10/
+./configure --prefix=/usr/local/python3
 
 make && make install
 ```
 
-3. 进入到编译后的目录下，测试是否安装成功：
+4. 添加环境变量
 
 ```sh
-cd /home/changyansong/Python/Python-3.8.10/python3/bin/
+echo 'export PYTHON3_HOME=/usr/local/python3' >> /etc/profile
+echo 'export PATH=$PYTHON3_HOME/bin:$PATH' >> /etc/profile
 
-# 查看 python 版本
-./python3 --version
+source /etc/profile
+```
+
+5. 测试是否安装成功：
+
+```sh
+python3 -V
+pip3 -V
+# 先更新 pip
+pip3 install --upgrade pip
+# 测试下载 numpy
+pip3 install numpy
 ```
 
 
 
-## 安装 pip
+## 安装 git
 
-1. 获取 pip 的安装文件（如果网址无法访问，可以手动访问后复制出来，然后自己新建 py 文件粘贴进去）
-
-```sh
-wget https://bootstrap.pypa.io/get-pip.py
-```
-
-2. 安装 pip：
+1. 下载 git 安装包，注意去链接中查找最新的版本
 
 ```sh
-cd /home/changyansong/Python/Python-3.8.10/python3/bin/
-
-./python3 get-pip.py
+wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.9.5.tar.gz --no-check-certificate
 ```
 
-3. 执行成功后，就会在当前 bin 目录下生成 pip3，测试是否安装成功：
+2. 解压后进入 git 主目录，执行：
 
 ```sh
-./pip3 --version
+make prefix=/usr/local/git all
+make prefix=/usr/local/git install
 ```
+
+3.  卸载安装 Git 编译依赖时（在上一节 python 安装中）自动安装的低版本 Git：
+
+```sh
+# 找出旧版本git，显示为 rng-tools-6.13-1.git.d207e0b6.tl3.x86_64
+rpm -qa | grep -w git
+# 卸载
+rpm -e rng-tools-6.13-1.git.d207e0b6.tl3.x86_64 --nodeps
+```
+
+4. 配置环境变量
+
+```sh
+echo 'export GIT2_HOME=/usr/local/git' >> /etc/profile
+echo 'export PATH=$GIT2_HOME/bin:$PATH' >> /etc/profile
+
+source /etc/profile
+```
+
+5. 测试是否安装成功
+
+```sh
+git --version
+```
+
+
+
+
+
+## 安装 java
+
+1. 安装 java
+
+```sh
+yum install java-1.8.0
+```
+
+2. 配置环境变量
+
+```sh
+# 显示 /usr/bin/java -> /etc/alternatives/java
+ll /usr/bin/java
+# 显示 /etc/alternatives/java -> /usr/lib/jvm/TencentKona-8.0.9-322%1/jre/bin/java
+ll /etc/alternatives/java
+```
+
+最终定位到 java 命令位于 /usr/lib/jvm/TencentKona-8.0.9-322%1/jre，所以将这个目录配置为 JAVA_HOME。注意是 jre 目录下。
+
+```sh
+echo 'export JAVA_HOME=/usr/lib/jvm/TencentKona-8.0.9-322%1/jre'  >> /etc/profile
+# 重新加载配置文件
+source /etc/profile
+# 查看环境变量
+echo $JAVA_HOME
+```
+
+
 
 
 
 ## 安装 esrally
 
-```sh
-cd /home/changyansong/Python/Python-3.8.10/python3/bin/
+如果下载速度过慢，可以在命令后面加上镜像下载的配置：`-i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com`
 
-./pip3 install esrally
+```sh
+pip3 install esrally 
 ```
 
 安装好后可以测试一下是否安装成功：
@@ -65,6 +145,20 @@ cd /home/changyansong/Python/Python-3.8.10/python3/bin/
 ```sh
 esrally --version
 ```
+
+
+
+踩坑：cannot import name 'soft_unicode' from 'markupsafe'
+
+解决方法：卸载当前版本，安装旧版本
+
+```sh
+pip3 uninstall markupsafe
+
+pip3 install markupsafe==2.0.1
+```
+
+
 
 
 
@@ -130,7 +224,7 @@ cd /home/changyansong/.rally/benchmarks/tracks/default/
 ./download.sh geopoint
 # 下载后会在当前目录下生成 rally-track-data-geopoint.tar，解压到用户根目录
 # 解压后，会自动在 ~/.rally/benchmarks/ 下新建 data/geopoint 目录，样本数据就保存在其中
-tar -xvf rally-track-data-geonames.tar -C ~/
+tar -xvf rally-track-data-geopoint.tar -C ~/
 ```
 
 
