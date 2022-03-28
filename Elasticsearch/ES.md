@@ -2,6 +2,48 @@
 
 # ES 部署
 
+## 安装 java
+
+1. 安装 java
+
+```sh
+# 检查系统自带的 jdk，然后卸载
+rpm -qa|grep java 
+
+yum install java-1.8.0-openjdk.x86_64
+```
+
+2. 配置环境变量
+
+```sh
+# 显示 /usr/bin/java -> /etc/alternatives/java
+ll /usr/bin/java
+# 显示 /etc/alternatives/java -> /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.312.b07-2.tl3.x86_64/jre/bin/java
+ll /etc/alternatives/java
+```
+
+最终定位到 java 命令位于 /usr/lib/jvm/TencentKona-8.0.9-322%1/jre，所以将这个目录配置为 JAVA_HOME。注意是 jre 目录下。
+
+```sh
+echo 'export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.312.b07-2.tl3.x86_64/jre'  >> /etc/profile
+echo 'export PATH=$JAVA_HOME/bin:$PATH'  >> /etc/profile
+echo 'export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar'  >> /etc/profile
+# 重新加载配置文件
+source /etc/profile
+# 查看环境变量
+echo $JAVA_HOME
+```
+
+3. 安装 jps 插件
+
+```sh
+yum install -y java-1.8.0-openjdk-devel
+```
+
+
+
+
+
 ## Linux 单节点部署
 
 1. 下载
@@ -12,7 +54,7 @@
 
 > 注意由于 es 和 jdk 是一个强依赖的关系，所以当我们在新版本的 es 压缩包中包含有自带的 jdk，但是当我们的 linux 中已经安装了 jdk 之后，就会发现启动 es 的时候优先去找的是 linux 中已经装好的 jdk，此时如果 jdk 的版本不一致，就会造成 jdk 不能正常运行 。具体 es 和 jdk 的对应版本参考：[https://www.elastic.co/cn/support/matrix#matrix_browsers](https://www.elastic.co/cn/support/matrix#matrix_browsers)
 
-也可以在Linux命令行，直接执行以下命令进行下载（下载比较慢）：
+也可以在Linux命令行，直接执行以下命令进行下载：
 
 ```sh
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.3.2-linux-x86_64.tar.gz
@@ -38,8 +80,6 @@ tar -zxvf elasticsearch-7.3.2-linux-x86_64.tar.gz
 # 创建用户后，会在 /home 下生成 /changyansong 目录
 useradd changyansong
 ```
-
-
 
 
 
@@ -806,34 +846,6 @@ public class FlinkElasticsearchSinkTest {
 	}
 }
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

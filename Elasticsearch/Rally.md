@@ -4,7 +4,7 @@
 
 由于 rally 要求 python 3.8 以上，所以需要重新下载一个 python 版本。
 
-注：pyenv 是一个 python 版本管理工具，可以在同一个系统中切换不同的 python 版本。但由于安装过程中出现问题，且未能解决，**所以选择自己手动下载 python 安装包，并且手动执行 python 和 pip 命令**。
+注：pyenv 是一个 python 版本管理工具，可以在同一个系统中切换不同的 python 版本。但由于安装过程中出现问题，且未能解决，所以选择自己手动下载 python 安装包，并且手动执行 python 和 pip 命令。
 
 
 
@@ -96,39 +96,6 @@ source /etc/profile
 ```sh
 git --version
 ```
-
-
-
-
-
-## 安装 java
-
-1. 安装 java
-
-```sh
-yum install java-1.8.0
-```
-
-2. 配置环境变量
-
-```sh
-# 显示 /usr/bin/java -> /etc/alternatives/java
-ll /usr/bin/java
-# 显示 /etc/alternatives/java -> /usr/lib/jvm/TencentKona-8.0.9-322%1/jre/bin/java
-ll /etc/alternatives/java
-```
-
-最终定位到 java 命令位于 /usr/lib/jvm/TencentKona-8.0.9-322%1/jre，所以将这个目录配置为 JAVA_HOME。注意是 jre 目录下。
-
-```sh
-echo 'export JAVA_HOME=/usr/lib/jvm/TencentKona-8.0.9-322%1/jre'  >> /etc/profile
-# 重新加载配置文件
-source /etc/profile
-# 查看环境变量
-echo $JAVA_HOME
-```
-
-
 
 
 
@@ -226,6 +193,31 @@ cd /home/changyansong/.rally/benchmarks/tracks/default/
 # 解压后，会自动在 ~/.rally/benchmarks/ 下新建 data/geopoint 目录，样本数据就保存在其中
 tar -xvf rally-track-data-geopoint.tar -C ~/
 ```
+
+
+
+如果用 download.sh 脚本下载过慢，可以选择手动下载， 首先写个脚本列出所有需要下载的样本数据地址：
+
+```sh
+# listfiles.sh
+track_files=$(ls */track.json)
+for track_file in $track_files; do 
+    track_name=$(echo $track_file | awk -F '/' '{print $1}')
+    echo $track_name
+
+    baseurl=$(grep base-url $track_file | awk '{print $2}' | sed -e 's/,//g' -e 's/"//g' | head -n 1)
+    #echo $baseurl
+
+    for data_file in $(cat $track_name/files.txt); do
+        url="$baseurl/$data_file"
+        echo $url
+    done | sort | uniq
+    echo
+    #break
+done
+```
+
+执行后就会打印出所有样本数据的地址了，然后对所有地址进行 wget 就会快一些。
 
 
 
