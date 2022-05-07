@@ -225,14 +225,14 @@ done
 启动 ES 后，在 geopoint 场景下测试 esrally：
 
 ```bash
-esrally race --pipeline=benchmark-only --target-hosts=127.0.0.1:9200 --offline --track=geopoint  --challenge=append-no-conflicts
+esrally race --pipeline=benchmark-only --target-hosts=127.0.0.1:9200 --offline --track=geopoint
 ```
 
 
 
+![1650861001311](Rally.assets/1650861001311.png)
 
-
-
+![1650861016953](Rally.assets/1650861016953.png)
 
 
 
