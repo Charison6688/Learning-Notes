@@ -849,6 +849,114 @@ public class FlinkElasticsearchSinkTest {
 
 
 
+# ES IDEA调试
+
+由于工作需要研究 ES 和 lucene 中 lz4 压缩算法部分的源码，因此需要能够在 IDEA 中对源码进行 debug。
+
+这里使用的工具的版本号为：
+
+|     组件      |        版本号        |
+| :-----------: | :------------------: |
+|      JDK      |        12.0.2        |
+|    gradle     |        5.4.1         |
+| elasticsearch |        6.8.4         |
+|      git      | 2.36.1（最新版即可） |
+|    windows    |          10          |
+
+
+
+**1. 下载 es 源码**
+
+```sh
+# 将ES代码下载至本地
+git clone https://github.com/elastic/elasticsearch.git
+# 进入代码目录 
+cd elasticsearch
+# 切换至指定版本，版本号可以在github上看
+git checkout v6.8.4
+```
+
+
+
+**2. 下载 jdk**
+
+在这个网址中可以下载不同版本的jdk：
+
+[http://www.codebaoku.com/jdk/jdk-oracle-jdk12.html](http://www.codebaoku.com/jdk/jdk-oracle-jdk12.html)
+
+下载后在 path 中配置 JAVA_HOME 环境变量。
+
+
+
+**3. 下载 gradle**
+
+这里选择用 IDEA 来自动下载当前 es 对应版本的 gradle。
+
+- 首先用 IDEA 打开 ES_HOME，会在控制台显示下载 `gradle-5.4.1-all.zip` ，等待该压缩包下载完毕后，关闭 IDEA。
+
+- 此时去源码目录下会看到生成 `ES_HOME\gradle\wrapper\dists\gradle-5.4.1-all\3221gyojl5jsh0helicew7rwx\gradle-5.4.1` 文件夹。
+- 由于编译 es 需要下载很多依赖包，而其中有很多包的站源是国外的，下载时比较慢。 因此需要给 Gradle 换成国内镜像源（使用阿里云镜像），提升依赖包下载速度。 在上一步的文件夹下，进入 `init.d` 目录，然后自己手动新建一个文件 `init.gradle` ，文件内容如下：
+
+```
+allprojects{
+    repositories {
+        def ALIYUN_REPOSITORY_URL = 'https://maven.aliyun.com/repository/public/'
+        def ALIYUN_GRADLE_PLUGIN_URL = 'https://maven.aliyun.com/repository/gradle-plugin/'
+        all { ArtifactRepository repo ->
+            if(repo instanceof MavenArtifactRepository){
+                def url = repo.url.toString()
+                if (url.startsWith('https://repo1.maven.org/maven2/')) {
+                    project.logger.lifecycle "Repository ${repo.url} replaced by $ALIYUN_REPOSITORY_URL."
+                    remove repo
+                }
+                if (url.startsWith('https://jcenter.bintray.com/')) {
+                    project.logger.lifecycle "Repository ${repo.url} replaced by $ALIYUN_REPOSITORY_URL."
+                    remove repo
+                }
+                if (url.startsWith('https://plugins.gradle.org/m2/')) {
+                    project.logger.lifecycle "Repository ${repo.url} replaced by $ALIYUN_GRADLE_PLUGIN_URL."
+                    remove repo
+                }
+            }
+        }
+        maven { url ALIYUN_REPOSITORY_URL }
+        maven { url ALIYUN_GRADLE_PLUGIN_URL }
+    }
+}
+```
+
+
+
+**4. 配置 IDEA**
+
+重新用 IDEA 打开 es 源码目录，打开 File -> Settings，设置 gradle 的目录和 jdk 的版本。
+
+![Annotation 2022-06-06 111022](ES.assets/Annotation%202022-06-06%20111022.png)
+
+最后只需要等待 gradle 自己编译源码即可。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
